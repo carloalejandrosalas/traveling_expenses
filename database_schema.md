@@ -1,6 +1,9 @@
 # Database Schema
+
 ## Entities
+
 ## Users
+
 - id (Primary Key)
 - identification_number (Unique)
 - name
@@ -15,6 +18,7 @@
 - type_user (Enum: 'admin', 'employee')
 
 ## Project
+
 - id (Primary Key)
 - name
 - description
@@ -28,6 +32,7 @@
 - team_members (Many-to-Many relationship with Users)
 
 ## Team
+
 - id (Primary Key)
 - name
 - description
@@ -36,6 +41,7 @@
 - project_id (Foreign Key: Project.id) unique
 
 ## Team Members
+
 - id (Primary Key)
 - user_id (Foreign Key: Users.id)
 - team_id (Foreign Key: Team.id)
@@ -46,16 +52,18 @@
 - user_id and team_id should be unique together to prevent duplicate entries for the same user in a team.
 
 ## Expenses
+
 - id (Primary Key)
 - amount
 - description
 - date_incurred
 - created_at
 - updated_at
-- team_id (Foreign Key: Team.id)
+- team_member_id (Foreign Key: Team Member.id)
 - category_id (Foreign Key: Category.id)
 
 ## Category
+
 - id (Primary Key)
 - name (Unique)
 - description

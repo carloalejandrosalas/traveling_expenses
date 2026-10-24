@@ -1,4 +1,7 @@
 package main.java.dtos.auth;
 
-public record LoginRequest() {
+public record LoginRequest(
+    String identificationNumber,
+    String password
+) {
 }

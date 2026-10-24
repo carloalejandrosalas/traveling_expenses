@@ -1,18 +1,29 @@
 package main.java;
 
 import main.java.screens.HomeScreen;
+import main.java.screens.Screen;
+import main.java.screens.projects.LoginScreen;
 import main.java.utils.ScreenUtils;
 
-import java.util.Scanner;
 
 public class Main {
     static void main() {
-        var scanner = new Scanner(System.in);
+        var appContext = new AppContext();
+
+        // Inject the default admin user into the database if it doesn't exist.
+        Bootstrap.seedDefaultAdminUser(appContext);
+
+        if (!appContext.isOk()) {
+            System.out.println("Failed to startup the application. Please check DB connection " +
+                    "and credentials.");
+            System.exit(1);
+        }
+
         showWelcomeMessage();
 
-        new HomeScreen(scanner).render();
+        new LoginScreen(appContext).render();
 
-        scanner.close();
+        appContext.close();
     }
 
     static void showWelcomeMessage () {

@@ -1,13 +1,13 @@
 package main.java.screens;
 
+import main.java.AppContext;
 import main.java.utils.ScreenUtils;
 
-import java.util.Scanner;
 
 public abstract class Screen {
-    public final Scanner input;
-    public Screen(Scanner input) {
-        this.input = input;
+    public final AppContext context;
+    public Screen(AppContext context) {
+        this.context = context;
     }
 
     /**
@@ -53,5 +53,22 @@ public abstract class Screen {
      */
     public void reRenderScreen() {
         render();
+    }
+
+    /**
+     * Displays the menu title to the screen.
+     */
+    public void showMenuTitle () {
+        showMenuTitle("Please select an option from the menu below:");
+    }
+
+    /**
+     * Displays the menu title to the screen with a custom title with the provided title.
+     * @param title The custom title to be displayed on the screen.
+     */
+    public void showMenuTitle (String title) {
+        ScreenUtils.separator(title.length());
+        ScreenUtils.printUI(title);
+        ScreenUtils.separator(title.length());
     }
 }

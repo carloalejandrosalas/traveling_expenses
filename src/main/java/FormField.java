@@ -29,20 +29,12 @@ public class FormField<T> {
     }
 
     public void prompt(Scanner input) {
-        String inputValue = ScreenUtils.promptUserInput(input, label, errorMessage);
-        var isValid = validate(inputValue);
-
-        if (inputValue == null || !isValid) {
-            // Prompt the user again if the input is invalid
-            prompt(input);
-        }
-
-        // Otherwise, set the value if the input is valid
-        setValue(parseValue(inputValue));
+       prompt(input, _ -> true, null);
     }
 
     public void prompt(Scanner input, Predicate<T> validationPredicate, String customErrorMessage) {
-        String inputValue = ScreenUtils.promptUserInput(input, label, errorMessage);
+        var isSensitive = this.type == UserInputTypeEnum.PASSWORD;
+        String inputValue = ScreenUtils.promptUserInput(input, label, errorMessage, isSensitive);
         var isValid = validate(inputValue);
 
         if (inputValue == null || !isValid) {
@@ -72,7 +64,7 @@ public class FormField<T> {
             case BIG_DECIMAL -> Validator.isBigDecimal(value);
             case YES_NO -> Validator.isYesNo(value);
             case DATE -> Validator.isDate(value);
-            case STRING -> true; // No validation needed for strings
+            case STRING, PASSWORD -> true; // No validation needed for strings and passwords
             case CURRENCY -> Validator.isCurrency(value);
         };
 
@@ -94,8 +86,9 @@ public class FormField<T> {
             case BIG_DECIMAL -> Mapper.mapToBigDecimal(inputValue);
             case YES_NO -> Mapper.mapYesNoToBoolean(inputValue);
             case DATE -> Mapper.mapToDate(inputValue);
-            case STRING -> inputValue; // Keep original value for STRING type.
+            case STRING, PASSWORD -> inputValue; // Keep original value for STRING and PASSWORD types.
             case CURRENCY -> Mapper.mapFromCurrencyToBigDecimal(inputValue);
+
         };
     }
 }

@@ -7,5 +7,6 @@ public enum UserInputTypeEnum {
     INTEGER,
     STRING,
     DATE,
-    YES_NO
+    YES_NO,
+    PASSWORD
 }

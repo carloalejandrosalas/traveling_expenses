@@ -7,24 +7,24 @@ import java.util.Scanner;
 
 public class ScreenUtils {
     public static Integer promptOption(Scanner scanner, int maxOption) {
-        printUI("Please select an option (1-" + maxOption + "):");
+        IO.print("\n➤ Select an option (1-" + maxOption + "): ");
         String input = scanner.nextLine();
 
-        var isValid = Validator.isInteger(input);
+        var option = Mapper.mapToInteger(input);
 
-        if (!isValid) {
+        if (option == null || option < 1 || option > maxOption) {
             printAlert("Invalid option. Please enter a number between 1 and " + maxOption + ".");
             return null;
         }
 
-        return Mapper.mapToInteger(input);
+        return option;
     }
 
-    public static String promptUserInput(Scanner scanner, String label, String errorMessage) {
-        return promptUserInput(scanner, label, errorMessage, false);
+    public static String promptUserInput(Scanner scanner, String label) {
+        return promptUserInput(scanner, label, false);
     }
 
-    public static String promptUserInput(Scanner scanner, String label, String errorMessage,
+    public static String promptUserInput(Scanner scanner, String label,
                                          boolean sensitive) {
         var input = "";
         if (sensitive) {
@@ -32,20 +32,15 @@ public class ScreenUtils {
 
             if (console == null) {
                 ScreenUtils.printAlert("No console available for IDE environments. Input will be visible.");
-                printUI(label);
+                IO.print("➤ " + label.trim() + " ");
                 input = scanner.nextLine();
             } else {
-                input = new String(console.readPassword(label + " (input will be hidden):"));
+                input = new String(console.readPassword("➤ " + label.trim() + " (hidden): "));
             }
 
         } else {
-            printUI(label);
+            IO.print("➤ " + label.trim() + " ");
             input = scanner.nextLine();
-        }
-
-        if (input == null || input.trim().isEmpty()) {
-            printAlert(errorMessage);
-            return null;
         }
 
         return input;
@@ -57,6 +52,22 @@ public class ScreenUtils {
      */
     public static void printUI(String content) {
         IO.println(content);
+    }
+
+    public static void printHeader(String title) {
+        var line = "═".repeat(title.length() + 4);
+        IO.println("\n╔" + line + "╗");
+        IO.println("║  " + title + "  ║");
+        IO.println("╚" + line + "╝");
+    }
+
+    public static void printSubtitle(String subtitle) {
+        IO.println("\n" + subtitle);
+        IO.println("─".repeat(subtitle.length()));
+    }
+
+    public static void printMenuItem(int number, String label) {
+        IO.println("  [" + number + "] " + label);
     }
 
     public static void printSuccess(String message) {
@@ -87,6 +98,12 @@ public class ScreenUtils {
         separator(50);
     }
     public static void separator(int length) {
-        IO.println("-".repeat(length + 4));
+        IO.println("─".repeat(length + 4));
+    }
+
+    protected static void cleanScreen() {
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
     }
 }

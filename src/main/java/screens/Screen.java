@@ -22,7 +22,6 @@ public abstract class Screen {
      */
     public abstract void renderSelectedOption (Integer option);
 
-
     public boolean isOptionValid(String input, int maxOption) {
         if (input == null) {
             ScreenUtils.printUI("Invalid option. Please try again.");
@@ -67,8 +66,6 @@ public abstract class Screen {
      * @param title The custom title to be displayed on the screen.
      */
     public void showMenuTitle (String title) {
-        ScreenUtils.separator(title.length());
-        ScreenUtils.printUI(title);
-        ScreenUtils.separator(title.length());
+        ScreenUtils.printSubtitle(title);
     }
 }

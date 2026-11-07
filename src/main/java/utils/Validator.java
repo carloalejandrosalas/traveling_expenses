@@ -62,4 +62,44 @@ public class Validator {
             return false;
         }
     }
+
+    public static boolean isLong(String input) {
+        try {
+            Long.parseLong(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidEnumValue(String input, Class<? extends Enum<?>> enumClass) {
+        if (input == null || enumClass == null) {
+            return false;
+        }
+        String normalized = input.trim().replaceAll("[\\s-]+", "_");
+        for (Enum<?> enumConstant : enumClass.getEnumConstants()) {
+            if (enumConstant.name().equalsIgnoreCase(normalized)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNumeric(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isDateTime(String input) {
+        try {
+            Instant.parse(input);
+            return true;
+        } catch (DateTimeException e) {
+            return false;
+        }
+    }
 }

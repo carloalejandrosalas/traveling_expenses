@@ -1,8 +1,6 @@
 package main.java;
 
-import main.java.screens.HomeScreen;
-import main.java.screens.Screen;
-import main.java.screens.projects.LoginScreen;
+import main.java.screens.auth.LoginScreen;
 import main.java.utils.ScreenUtils;
 
 

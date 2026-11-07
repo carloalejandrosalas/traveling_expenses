@@ -1,9 +1,11 @@
 package main.java.enums;
 
 public enum ProjectStatusEnum {
-    ACTIVE("active"),
-    COMPLETED("completed"),
-    ON_HOLD("on_hold");
+    PLANNED("planned"),
+    ON_HOLD("on_hold"),
+    CANCELED("canceled"),
+    IN_PROGRESS("in_progress"),
+    COMPLETED("completed");
 
     private final String status;
 

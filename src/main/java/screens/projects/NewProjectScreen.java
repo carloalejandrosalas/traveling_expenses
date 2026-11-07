@@ -1,20 +1,25 @@
 package main.java.screens.projects;
 
 import main.java.AppContext;
-import main.java.FormField;
+import main.java.forms.common.Form;
+import main.java.forms.common.FormField;
 import main.java.daos.ProjectDao;
-import main.java.dtos.UpsertProjectRequest;
+import main.java.dtos.projects.CreateProjectRequest;
 import main.java.enums.ProjectStatusEnum;
 import main.java.enums.UserInputTypeEnum;
+import main.java.forms.projects.UpsertProjectForm;
+import main.java.screens.AuthenticatedScreen;
 import main.java.screens.HomeScreen;
-import main.java.screens.Screen;
+import main.java.utils.ProjectUtils;
 import main.java.utils.ScreenUtils;
+import main.java.utils.Validator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class NewProjectScreen extends Screen {
+public class NewProjectScreen extends AuthenticatedScreen {
     private final ProjectDao projectDao;
+    private Long latestProjectId;
 
     public NewProjectScreen(AppContext context) {
         super(context);
@@ -33,10 +38,13 @@ public class NewProjectScreen extends Screen {
 
     public void renderOptionMenu () {
         showMenuTitle("Would you like to:");
-        ScreenUtils.printUI("1. Enroll a new project");
-        ScreenUtils.printUI("2. Return to the home screen");
+        ScreenUtils.printMenuItem(1, "Enroll a new project");
+        ScreenUtils.printMenuItem(2, "View Project details");
+        ScreenUtils.printMenuItem(3, "New team");
+        ScreenUtils.printMenuItem(4, "Add team member");
+        ScreenUtils.printMenuItem(5, "Return to the home screen");
 
-        var selectedOption = ScreenUtils.promptOption(this.context.getScanner(), 2);
+        var selectedOption = ScreenUtils.promptOption(this.context.getScanner(), 5);
 
         if (selectedOption == null) {
             renderOptionMenu();
@@ -48,52 +56,38 @@ public class NewProjectScreen extends Screen {
 
     public void renderForm () {
         try {
+            ScreenUtils.printHeader("NEW PROJECT");
             showMenuTitle("Please fill in the following details to create a new project:");
 
-            var scanner = this.context.getScanner();
-            var nameField = new FormField<String>(UserInputTypeEnum.STRING, "Project Name: ",
-                    "Please enter a valid project name.");
-            var descriptionField = new FormField<String>(UserInputTypeEnum.STRING, "Project " +
-                    "Description: ",
-                    "Please enter a valid project description.");
-            var budgetField = new FormField<BigDecimal>(UserInputTypeEnum.CURRENCY, "Project Budget: ",
-                    "Please enter a valid budget.");
-            var startDateField = new FormField<LocalDate>(UserInputTypeEnum.DATE,
-                    "Project Start Date (YYYY-MM-DD): ",
-                    "Please enter a valid start date.");
-            var endDateField = new FormField<LocalDate>(UserInputTypeEnum.DATE,
-                    "Project End Date (YYYY-MM-DD): ",
-                    "Please enter a valid end date.");
-            var statusField = new FormField<String>(UserInputTypeEnum.STRING,
-                    "Project Status (e.g., Planned, In Progress, Completed): ",
-                    "Please enter a valid project status.");
+            var projectForm = new UpsertProjectForm(this.context, null);
 
-            // Prompt the user for each field and validate the input
-            nameField.prompt(scanner);
-            descriptionField.prompt(scanner);
-            budgetField.prompt(scanner);
+            projectForm.renderForm();
 
-            startDateField.prompt(scanner);
-            endDateField.prompt(scanner, (endDate) -> endDate.isAfter(startDateField.getValue()),
-                    "End date must be after the start date.");
-            statusField.prompt(scanner);
+            var nameField = projectForm.nameField;
+            var descriptionField = projectForm.descriptionField;
+            var budgetField = projectForm.budgetField;
+            var startDateField = projectForm.startDateField;
+            var endDateField = projectForm.endDateField;
+            var statusField = projectForm.statusField;
 
             // Create a new project using the collected data
-            var newProjectRequest = new UpsertProjectRequest(
+            var newProjectRequest = new CreateProjectRequest(
                     this.context.getCurrentUser().id(),
                     nameField.getValue(),
                     descriptionField.getValue(),
                     budgetField.getValue(),
                     startDateField.getValue(),
                     endDateField.getValue(),
-                    ProjectStatusEnum.valueOf(statusField.getValue())
+                    ProjectUtils.mapToProjectStatusEnum((String) statusField.getValue())
             );
-            var enrolled = this.projectDao.createProject(newProjectRequest);
+            Long enrolledProjectId = this.projectDao.createProject(newProjectRequest);
 
-            if (!enrolled) {
+            if (enrolledProjectId == null) {
                 ScreenUtils.printError("Failed to create the new project.");
                 return;
             }
+
+            this.latestProjectId = enrolledProjectId;
 
             ScreenUtils.printSuccess("New project \"%s\" created successfully!"
                     .formatted(nameField.getValue()));
@@ -106,7 +100,8 @@ public class NewProjectScreen extends Screen {
     public void renderSelectedOption(Integer option) {
         switch (option) {
             case 1 -> render();
-            case 2 -> new HomeScreen(this.context).render();
+            case 2 -> new ProjectDetailsScreen(this.context, this.latestProjectId).render();
+            case 5 -> new HomeScreen(this.context).render();
             default -> {
                 ScreenUtils.printAlert("Invalid option selected. Please try again.");
                 renderOptionMenu();

@@ -14,13 +14,14 @@ public class HomeScreen extends AuthenticatedScreen {
 
     @Override
     public void render() {
+        ScreenUtils.printHeader("TRAVELING EXPENSES - HOME");
         showMenuTitle();
-        ScreenUtils.printUI("1. Projects");
-        ScreenUtils.printUI("2. Users");
-        ScreenUtils.printUI("3. Teams");
-        ScreenUtils.printUI("4. Expenses");
-        ScreenUtils.printUI("5. Categories");
-        ScreenUtils.printUI("6. Exit");
+        ScreenUtils.printMenuItem(1, "Projects");
+        ScreenUtils.printMenuItem(2, "Users");
+        ScreenUtils.printMenuItem(3, "Teams");
+        ScreenUtils.printMenuItem(4, "Expenses");
+        ScreenUtils.printMenuItem(5, "Categories");
+        ScreenUtils.printMenuItem(6, "Exit");
 
         Integer selectedOption = ScreenUtils.promptOption(this.context.getScanner(), 6);
 
@@ -36,6 +37,10 @@ public class HomeScreen extends AuthenticatedScreen {
         switch (option) {
             case 1 ->
                 new ProjectIndexScreen(this.context).render();
+            case 6 -> {
+                ScreenUtils.printUI("\n👋 Exiting the application. Goodbye!");
+                System.exit(0);
+            }
             default -> {
                 ScreenUtils.printAlert("Invalid option selected. Please try again.");
                 reRenderScreen();
